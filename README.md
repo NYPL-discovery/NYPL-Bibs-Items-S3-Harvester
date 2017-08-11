@@ -22,7 +22,18 @@ export itemStream=kinesis_items_stream
 ```
 * Run as a spring boot app from IDE otherwise just do mvn clean package for the jar file and run it using `java -jar NYPL-*.jar`
 
-## Deploying to Elastic Beanstalk
+
+## Elastic Beanstalk
+
+In EB this application is called `NYPL-Bibs-Items-S3-Harvester`.
+Since this code base can harvest both bibs and items the environment names could look like:
+
+ * sierra-**item**-harvester-**production**
+ * sierra-**bib**-harvester-**production**
+ * sierra-**item**-harvester-**qa**
+ * sierra-**bib**-harvester-**qa**
+
+### Deploying
 
 ```bash
 eb create sierra-[item|bib]-harvester-[environment] \
