@@ -42,7 +42,7 @@ public class S3HarvesterRouter extends RouteBuilder {
 
   @Autowired
   private BaseConfig baseConfig;
-
+  
   private static final String NYPL_SOURCE = "nyplSource";
 
   private static final String NYPL_TYPE = "nyplType";
@@ -72,7 +72,16 @@ public class S3HarvesterRouter extends RouteBuilder {
           + EnvironmentConfig.BIBS_S3_JSON_FILE
           + "&amazonS3Client=#getAmazonS3Client&deleteAfterRead=false&maxMessagesPerPoll=10")
               .idempotentConsumer(header("CamelAwsS3Key"),
-                  MemoryIdempotentRepository.memoryIdempotentRepository())
+                  MemoryIdempotentRepository.memoryIdempotentRepository()).skipDuplicate(false)
+              .filter(property(Exchange.DUPLICATE_MESSAGE).isEqualTo(true))
+                .log("Received a duplicate message")
+                .process(new Processor() {
+                  
+                  @Override
+                  public void process(Exchange exchange) throws Exception {
+                    System.exit(0);
+                  }
+                }).end() 
               .split(body().tokenize("\n")).streaming().parallelProcessing().stopOnException()
               .process(new Processor() {
 
@@ -113,7 +122,16 @@ public class S3HarvesterRouter extends RouteBuilder {
           + EnvironmentConfig.ITEMS_S3_JSON_FILE
           + "&amazonS3Client=#getAmazonS3Client&deleteAfterRead=false&maxMessagesPerPoll=10")
               .idempotentConsumer(header("CamelAwsS3Key"),
-                  MemoryIdempotentRepository.memoryIdempotentRepository())
+                  MemoryIdempotentRepository.memoryIdempotentRepository()).skipDuplicate(false)
+              .filter(property(Exchange.DUPLICATE_MESSAGE).isEqualTo(true))
+              .log("Received a duplicate message")
+              .process(new Processor() {
+                
+                @Override
+                public void process(Exchange exchange) throws Exception {
+                  System.exit(0);
+                }
+              }).end()
               .split(body().tokenize("\n")).streaming().parallelProcessing().stopOnException()
               .process(new Processor() {
 
