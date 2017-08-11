@@ -22,11 +22,26 @@ export itemStream=kinesis_items_stream
 ```
 * Run as a spring boot app from IDE otherwise just do mvn clean package for the jar file and run it using `java -jar NYPL-*.jar`
 
+## Deploying to Elastic Beanstalk
+
+```bash
+eb create sierra-[item|bib]-harvester-[environment] \
+    --instance_type m4.large \
+    --instance_profile cloudwatchable-beanstalk \
+    --cname sierra-[item|bib]-harvester-[environment] \
+    --vpc.id public-vpc \
+    --vpc.elbsubnets public-subnet-id-1,public-subnet-id-2 \
+    --vpc.ec2subnets private-subnet-id-1,private-subnet-id-2 \
+    --tags Project=Discovery,harvester=sierra_harvester \
+    --keyname dgdvteam \
+    --scale 1 \
+    --envvars KEYFROMABOVE="value",KEYFROMABOVE2="value" \
+    --profile your-aws-profile-name
 ```
 
 ## How it works
 
-  Only bibs or items can be processed at one time. Instead of loading the entire file from S3 into the machine's memory, we are using the splitter to split based on new line token (every bib and item in the file is separated by a new line) and streaming it. Then we are using camel's parallelProcessing with default settings to process data faster.
+Only bibs or items can be processed at one time. Instead of loading the entire file from S3 into the machine's memory, we are using the splitter to split based on new line token (every bib and item in the file is separated by a new line) and streaming it. Then we are using camel's parallelProcessing with default settings to process data faster.
 
 ## Limitations
 
