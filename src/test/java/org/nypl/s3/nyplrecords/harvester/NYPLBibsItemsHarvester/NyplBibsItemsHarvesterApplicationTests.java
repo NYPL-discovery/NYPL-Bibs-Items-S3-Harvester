@@ -1,4 +1,4 @@
-package org.nypl.s3.nyplrecords.harvester.NYPLBibsItemsHarvester;
+/*package org.nypl.s3.nyplrecords.harvester.NYPLBibsItemsHarvester;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,4 +12,4 @@ public class NyplBibsItemsHarvesterApplicationTests {
   @Test
   public void contextLoads() {}
 
-}
+}*/
