@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.avro.Schema;
+import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
@@ -16,6 +17,8 @@ import org.nypl.s3.nyplrecords.harvester.exception.S3HarvesterException;
 import org.nypl.s3.nyplrecords.harvester.schema.BibAvroSchema;
 import org.nypl.s3.nyplrecords.harvester.schema.ItemAvroSchema;
 import org.nypl.s3.nyplrecords.harvester.streams.KinesisProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
@@ -42,7 +45,12 @@ public class S3HarvesterRouter extends RouteBuilder {
 
   @Autowired
   private BaseConfig baseConfig;
-  
+
+  @Autowired
+  private CamelContext camelContext;
+
+  private static Logger logger = LoggerFactory.getLogger(S3HarvesterRouter.class);
+
   private static final String NYPL_SOURCE = "nyplSource";
 
   private static final String NYPL_TYPE = "nyplType";
@@ -72,18 +80,16 @@ public class S3HarvesterRouter extends RouteBuilder {
           + EnvironmentConfig.BIBS_S3_JSON_FILE
           + "&amazonS3Client=#getAmazonS3Client&deleteAfterRead=false&maxMessagesPerPoll=10")
               .idempotentConsumer(header("CamelAwsS3Key"),
-                  MemoryIdempotentRepository.memoryIdempotentRepository()).skipDuplicate(false)
-              .filter(property(Exchange.DUPLICATE_MESSAGE).isEqualTo(true))
-                .log("Received a duplicate message")
-                .process(new Processor() {
-                  
-                  @Override
-                  public void process(Exchange exchange) throws Exception {
-                    System.exit(0);
-                  }
-                }).end() 
-              .split(body().tokenize("\n")).streaming().parallelProcessing().stopOnException()
-              .process(new Processor() {
+                  MemoryIdempotentRepository.memoryIdempotentRepository())
+              .skipDuplicate(false).filter(property(Exchange.DUPLICATE_MESSAGE).isEqualTo(true))
+              .log("Received a duplicate message").process(new Processor() {
+
+                @Override
+                public void process(Exchange exchange) throws Exception {
+                  camelContext.stop();
+                }
+              }).end().split(body().tokenize("\n")).streaming().parallelProcessing()
+              .stopOnException().process(new Processor() {
 
                 @Override
                 public void process(Exchange exchange) throws Exception {
@@ -111,7 +117,8 @@ public class S3HarvesterRouter extends RouteBuilder {
                   AvroMapper avroMapper = new AvroMapper();
                   byte[] avroBib = avroMapper.writer(avroSchema)
                       .writeValueAsBytes(exchange.getIn().getBody(Map.class));
-                  System.out.println(exchange.getIn().getBody(Map.class));
+                  logger.info(
+                      new ObjectMapper().writeValueAsString(exchange.getIn().getBody(Map.class)));
                   List<byte[]> avroBibList = new ArrayList<>();
                   avroBibList.add(avroBib);
                   exchange.getIn().setBody(avroBibList);
@@ -122,18 +129,16 @@ public class S3HarvesterRouter extends RouteBuilder {
           + EnvironmentConfig.ITEMS_S3_JSON_FILE
           + "&amazonS3Client=#getAmazonS3Client&deleteAfterRead=false&maxMessagesPerPoll=10")
               .idempotentConsumer(header("CamelAwsS3Key"),
-                  MemoryIdempotentRepository.memoryIdempotentRepository()).skipDuplicate(false)
-              .filter(property(Exchange.DUPLICATE_MESSAGE).isEqualTo(true))
-              .log("Received a duplicate message")
-              .process(new Processor() {
-                
+                  MemoryIdempotentRepository.memoryIdempotentRepository())
+              .skipDuplicate(false).filter(property(Exchange.DUPLICATE_MESSAGE).isEqualTo(true))
+              .log("Received a duplicate message").process(new Processor() {
+
                 @Override
                 public void process(Exchange exchange) throws Exception {
-                  System.exit(0);
+                  camelContext.stop();
                 }
-              }).end()
-              .split(body().tokenize("\n")).streaming().parallelProcessing().stopOnException()
-              .process(new Processor() {
+              }).end().split(body().tokenize("\n")).streaming().parallelProcessing()
+              .stopOnException().process(new Processor() {
 
                 @Override
                 public void process(Exchange exchange) throws Exception {
@@ -162,7 +167,8 @@ public class S3HarvesterRouter extends RouteBuilder {
                   AvroMapper avroMapper = new AvroMapper();
                   byte[] avroItem = avroMapper.writer(avroSchema)
                       .writeValueAsBytes(exchange.getIn().getBody(Map.class));
-                  System.out.println(exchange.getIn().getBody(Map.class));
+                  logger.info(
+                      new ObjectMapper().writeValueAsString(exchange.getIn().getBody(Map.class)));
                   List<byte[]> avroItemList = new ArrayList<>();
                   avroItemList.add(avroItem);
                   exchange.getIn().setBody(avroItemList);
