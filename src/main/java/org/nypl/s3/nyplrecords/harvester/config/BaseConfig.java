@@ -21,17 +21,13 @@ public class BaseConfig {
 
   @Bean
   public AmazonS3 getAmazonS3Client() {
-    AWSCredentials awsCredentials = new BasicAWSCredentials(EnvironmentConfig.AMAZON_ACCESS_KEY,
-        EnvironmentConfig.AMAZON_SECRET_KEY);
-    AmazonS3 amazonClient = new AmazonS3Client(awsCredentials);
+    AmazonS3 amazonClient = new AmazonS3Client();
     return amazonClient;
   }
 
   @Bean
   public AmazonKinesisClient getAmazonKinesisClient() {
-    AWSCredentials awsCredentials = new BasicAWSCredentials(EnvironmentConfig.AMAZON_ACCESS_KEY,
-        EnvironmentConfig.AMAZON_SECRET_KEY);
-    AmazonKinesisClient amazonKinesisClient = new AmazonKinesisClient(awsCredentials);
+    AmazonKinesisClient amazonKinesisClient = new AmazonKinesisClient();
 
     logger.info("Configured Kinesis Client");
 

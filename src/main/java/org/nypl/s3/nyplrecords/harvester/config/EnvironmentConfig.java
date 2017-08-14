@@ -3,8 +3,6 @@ package org.nypl.s3.nyplrecords.harvester.config;
 public class EnvironmentConfig {
 
   public static final String BUCKET_NAME = System.getenv("awsBucketName");
-  public static final String AMAZON_ACCESS_KEY = System.getenv("awsAccessKey");
-  public static final String AMAZON_SECRET_KEY = System.getenv("awsSecretKey");
   public static final String AMAZON_REGION = System.getenv("awsRegion");
   public static final Boolean DOWNLOAD_FILES_FROM_S3 =
       Boolean.parseBoolean(System.getenv("downloadFileAndThenRun"));
