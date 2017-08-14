@@ -8,10 +8,10 @@ An app to retrieve all the bibs and items that are in the bib and item json file
  * set the following env variables:
 
 ```
-export awsAccessKey=your_access_key
+export AWS_ACCESS_KEY_ID=your_access_key
 export awsBucketName=bucket_with_bibs_items_json_files
 export awsRegion=us-east-1
-export awsSecretKey=your_secret_key
+export AWS_SECRET_ACCESS_KEY=your_secret_key
 export bibSchemaAPI=https://api.nypltech.org/api/v0.1/current-schemas/BibPostRequest
 export bibsOrItems=items|bibs
 export bibsS3JsonFile=bibs.ndjson
