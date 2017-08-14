@@ -20,7 +20,7 @@ export itemSchemaAPI=https://api.nypltech.org/api/v0.1/current-schemas/ItemPostR
 export itemsS3JsonFile=items.ndjson
 export itemStream=kinesis_items_stream
 ```
-* Run as a spring boot app from IDE otherwise just do mvn clean package for the jar file and run it using `java -jar NYPL-*.jar`
+* Run as a spring boot app from IDE otherwise just do `mvn clean package` for the jar file and run it using `java -jar NYPL-*.jar`
 
 
 ## Elastic Beanstalk
@@ -34,6 +34,8 @@ Since this code base can harvest both bibs and items the environment names could
  * sierra-**bib**-harvester-**qa**
 
 ### Deploying
+
+#### Initial Creation
 
 ```bash
 eb create sierra-[item|bib]-harvester-[environment] \
@@ -50,6 +52,11 @@ eb create sierra-[item|bib]-harvester-[environment] \
     --profile your-aws-profile-name
 ```
 
+#### Deploying
+
+1.  Build and artifact with `mvn clean package`
+2.  `eb deploy [environmentname] //e.g. eb deploy sierra-bib-harvester-production`
+
 ## How it works
 
 Only bibs or items can be processed at one time. Instead of loading the entire file from S3 into the machine's memory, we are using the splitter to split based on new line token (every bib and item in the file is separated by a new line) and streaming it. Then we are using camel's parallelProcessing with default settings to process data faster.
@@ -58,7 +65,8 @@ Only bibs or items can be processed at one time. Instead of loading the entire f
 
  Camel AWS-S3 component has an option to deleteAfterRead. If this is set to true, it will delete the file from the S3 bucket after processing it. We don't want to delete our bibs.json and items.json files as we may need to read from those files in the future, hence setting deleteAfterRead to false results into another problem, where it will keep reading that file again even after it read it once. To get around this issue, in the camel route we are using an IdempotentConsumer and filtering for duplicate files (bibs.json/items.json) that come in and stop the process, so that we only process the files once.
 
- # Links
+## Links
+
  http://camel.apache.org/aws-s3.html
  http://camel.apache.org/splitter.html
  http://people.apache.org/~dkulp/camel/idempotent-consumer.html
