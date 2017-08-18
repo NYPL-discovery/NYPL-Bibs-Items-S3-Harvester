@@ -49,8 +49,6 @@ public class S3HarvesterRouter extends RouteBuilder {
   @Autowired
   private CamelContext camelContext;
 
-  private static Logger logger = LoggerFactory.getLogger(S3HarvesterRouter.class);
-
   private static final String NYPL_SOURCE = "nyplSource";
 
   private static final String NYPL_TYPE = "nyplType";
@@ -117,8 +115,6 @@ public class S3HarvesterRouter extends RouteBuilder {
                   AvroMapper avroMapper = new AvroMapper();
                   byte[] avroBib = avroMapper.writer(avroSchema)
                       .writeValueAsBytes(exchange.getIn().getBody(Map.class));
-                  logger.info(
-                      new ObjectMapper().writeValueAsString(exchange.getIn().getBody(Map.class)));
                   List<byte[]> avroBibList = new ArrayList<>();
                   avroBibList.add(avroBib);
                   exchange.getIn().setBody(avroBibList);
@@ -167,8 +163,6 @@ public class S3HarvesterRouter extends RouteBuilder {
                   AvroMapper avroMapper = new AvroMapper();
                   byte[] avroItem = avroMapper.writer(avroSchema)
                       .writeValueAsBytes(exchange.getIn().getBody(Map.class));
-                  logger.info(
-                      new ObjectMapper().writeValueAsString(exchange.getIn().getBody(Map.class)));
                   List<byte[]> avroItemList = new ArrayList<>();
                   avroItemList.add(avroItem);
                   exchange.getIn().setBody(avroItemList);

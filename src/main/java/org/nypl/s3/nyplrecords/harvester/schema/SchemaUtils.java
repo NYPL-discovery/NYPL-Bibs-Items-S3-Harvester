@@ -75,9 +75,6 @@ public class SchemaUtils {
         apiResponse = out.getBody(String.class);
       }
 
-      logger.info("schema api response code - " + responseCode);
-      logger.info("schema api response body - " + apiResponse);
-
       Map<String, Object> responseDeserialized =
           new ObjectMapper().readValue(apiResponse, Map.class);
       Map<String, Object> schemaData = (Map<String, Object>) responseDeserialized.get(SCHEMA_DATA);
