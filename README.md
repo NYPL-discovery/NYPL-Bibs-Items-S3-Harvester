@@ -5,13 +5,13 @@ An app to retrieve all the bibs and items that are in the bib and item json file
 ## To run the app locally
 
  * clone the repo
- * set the following env variables:
+ * set the following env variables, for different options to set AWS credentials, please refer to http://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html.
 
 ```
-export awsAccessKey=your_access_key
+export AWS_ACCESS_KEY_ID=your_access_key
 export awsBucketName=bucket_with_bibs_items_json_files
 export awsRegion=us-east-1
-export awsSecretKey=your_secret_key
+export AWS_SECRET_ACCESS_KEY=your_secret_key
 export bibSchemaAPI=https://api.nypltech.org/api/v0.1/current-schemas/BibPostRequest
 export bibsOrItems=items|bibs
 export bibsS3JsonFile=bibs.ndjson
