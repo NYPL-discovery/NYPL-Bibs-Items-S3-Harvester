@@ -1,5 +1,6 @@
 package org.nypl.s3.nyplrecords.harvester.routes;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +64,9 @@ public class S3HarvesterRouter extends RouteBuilder {
 
   public static final String PARTITION_KEY = "CamelAwsKinesisPartitionKey";
   public static final String SEQUENCE_NUMBER = "CamelAwsKinesisSequenceNumber";
-
+  
+  private static Logger logger = LoggerFactory.getLogger(S3HarvesterRouter.class);
+  
   @Override
   public void configure() throws Exception {
 
@@ -87,7 +90,7 @@ public class S3HarvesterRouter extends RouteBuilder {
                   camelContext.stop();
                 }
               }).end().split(body().tokenize("\n")).streaming().parallelProcessing()
-              .stopOnException().process(new Processor() {
+              .stopOnException().convertBodyTo(String.class, "UTF-8").process(new Processor() {
 
                 @Override
                 public void process(Exchange exchange) throws Exception {
@@ -95,6 +98,8 @@ public class S3HarvesterRouter extends RouteBuilder {
                     bibAvroSchema.setSchema(retryTemplate, producerTemplate);
                   }
                   String nyplRecord = exchange.getIn().getBody(String.class);
+                  logger.info(Charset.defaultCharset().toString());
+                  logger.info(nyplRecord);
                   Map<String, Object> nyplRecordKeyVals =
                       new ObjectMapper().readValue(nyplRecord, Map.class);
                   nyplRecordKeyVals.put(NYPL_SOURCE, SIERRA_NYPL_SOURCE);
