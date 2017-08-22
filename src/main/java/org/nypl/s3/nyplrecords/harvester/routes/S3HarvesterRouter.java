@@ -97,7 +97,7 @@ public class S3HarvesterRouter extends RouteBuilder {
                   if (bibAvroSchema.getSchema() == null) {
                     bibAvroSchema.setSchema(retryTemplate, producerTemplate);
                   }
-                  String nyplRecord = exchange.getIn().getBody(String.class);
+                  String nyplRecord = new String((String) exchange.getIn().getBody());
                   logger.info(nyplRecord);
                   Map<String, Object> nyplRecordKeyVals =
                       new ObjectMapper().readValue(nyplRecord, Map.class);
