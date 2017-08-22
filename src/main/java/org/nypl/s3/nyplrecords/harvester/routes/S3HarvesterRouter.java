@@ -79,7 +79,7 @@ public class S3HarvesterRouter extends RouteBuilder {
     if (bibOrItem.equals(BIB)) {
       from("aws-s3://" + EnvironmentConfig.BUCKET_NAME + "?fileName="
           + EnvironmentConfig.BIBS_S3_JSON_FILE
-          + "&amazonS3Client=#getAmazonS3Client&CamelAwsS3ContentEncoding=UTF-8&deleteAfterRead=false&maxMessagesPerPoll=10")
+          + "&amazonS3Client=#getAmazonS3Client&CamelAwsS3ContentEncoding=\"UTF-8\"&deleteAfterRead=false&maxMessagesPerPoll=10")
               .idempotentConsumer(header("CamelAwsS3Key"),
                   MemoryIdempotentRepository.memoryIdempotentRepository())
               .skipDuplicate(false).filter(property(Exchange.DUPLICATE_MESSAGE).isEqualTo(true))
