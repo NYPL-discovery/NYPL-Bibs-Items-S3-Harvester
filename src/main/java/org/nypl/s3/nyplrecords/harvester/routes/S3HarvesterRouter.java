@@ -63,7 +63,9 @@ public class S3HarvesterRouter extends RouteBuilder {
 
   public static final String PARTITION_KEY = "CamelAwsKinesisPartitionKey";
   public static final String SEQUENCE_NUMBER = "CamelAwsKinesisSequenceNumber";
-
+  
+  private static Logger logger = LoggerFactory.getLogger(S3HarvesterRouter.class);
+  
   @Override
   public void configure() throws Exception {
 
@@ -95,6 +97,7 @@ public class S3HarvesterRouter extends RouteBuilder {
                     bibAvroSchema.setSchema(retryTemplate, producerTemplate);
                   }
                   String nyplRecord = exchange.getIn().getBody(String.class);
+                  logger.info(nyplRecord);
                   Map<String, Object> nyplRecordKeyVals =
                       new ObjectMapper().readValue(nyplRecord, Map.class);
                   nyplRecordKeyVals.put(NYPL_SOURCE, SIERRA_NYPL_SOURCE);
