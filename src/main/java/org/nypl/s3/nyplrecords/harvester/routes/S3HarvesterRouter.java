@@ -1,5 +1,6 @@
 package org.nypl.s3.nyplrecords.harvester.routes;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +79,7 @@ public class S3HarvesterRouter extends RouteBuilder {
     if (bibOrItem.equals(BIB)) {
       from("aws-s3://" + EnvironmentConfig.BUCKET_NAME + "?fileName="
           + EnvironmentConfig.BIBS_S3_JSON_FILE
-          + "&amazonS3Client=#getAmazonS3Client&deleteAfterRead=false&maxMessagesPerPoll=10")
+          + "&amazonS3Client=#getAmazonS3Client&CamelAwsS3ContentEncoding=UTF-8&deleteAfterRead=false&maxMessagesPerPoll=10")
               .idempotentConsumer(header("CamelAwsS3Key"),
                   MemoryIdempotentRepository.memoryIdempotentRepository())
               .skipDuplicate(false).filter(property(Exchange.DUPLICATE_MESSAGE).isEqualTo(true))
@@ -96,7 +97,7 @@ public class S3HarvesterRouter extends RouteBuilder {
                   if (bibAvroSchema.getSchema() == null) {
                     bibAvroSchema.setSchema(retryTemplate, producerTemplate);
                   }
-                  String nyplRecord = new String(exchange.getIn().getBody(String.class).getBytes("UTF-8"));
+                  String nyplRecord = exchange.getIn().getBody(String.class);
                   logger.info(nyplRecord);
                   Map<String, Object> nyplRecordKeyVals =
                       new ObjectMapper().readValue(nyplRecord, Map.class);
