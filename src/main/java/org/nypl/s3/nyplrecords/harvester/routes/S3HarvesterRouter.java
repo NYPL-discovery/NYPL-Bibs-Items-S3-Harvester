@@ -79,7 +79,7 @@ public class S3HarvesterRouter extends RouteBuilder {
     if (bibOrItem.equals(BIB)) {
       from("aws-s3://" + EnvironmentConfig.BUCKET_NAME + "?fileName="
           + EnvironmentConfig.BIBS_S3_JSON_FILE
-          + "&amazonS3Client=#getAmazonS3Client&CamelAwsS3ContentEncoding=\"UTF-8\"&deleteAfterRead=false&maxMessagesPerPoll=10")
+          + "&amazonS3Client=#getAmazonS3Client&deleteAfterRead=false&maxMessagesPerPoll=10")
               .idempotentConsumer(header("CamelAwsS3Key"),
                   MemoryIdempotentRepository.memoryIdempotentRepository())
               .skipDuplicate(false).filter(property(Exchange.DUPLICATE_MESSAGE).isEqualTo(true))
@@ -90,14 +90,14 @@ public class S3HarvesterRouter extends RouteBuilder {
                   camelContext.stop();
                 }
               }).end().split(body().tokenize("\n")).streaming().parallelProcessing()
-              .stopOnException().process(new Processor() {
+              .stopOnException().convertBodyTo(String.class, "UTF-8").process(new Processor() {
 
                 @Override
                 public void process(Exchange exchange) throws Exception {
                   if (bibAvroSchema.getSchema() == null) {
                     bibAvroSchema.setSchema(retryTemplate, producerTemplate);
                   }
-                  String nyplRecord = new String((String) exchange.getIn().getBody());
+                  String nyplRecord = exchange.getIn().getBody(String.class);
                   logger.info(nyplRecord);
                   Map<String, Object> nyplRecordKeyVals =
                       new ObjectMapper().readValue(nyplRecord, Map.class);
