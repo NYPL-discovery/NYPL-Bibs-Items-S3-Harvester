@@ -43,14 +43,15 @@ eb create sierra-[item|bib]-harvester-[environment] \
     --instance_profile cloudwatchable-beanstalk \
     --cname sierra-[item|bib]-harvester-[environment] \
     --vpc.id public-vpc \
-    --vpc.elbsubnets public-subnet-id-1,public-subnet-id-2 \
-    --vpc.ec2subnets private-subnet-id-1,private-subnet-id-2 \
+    --vpc.ec2subnets subnet-id-1 \
     --tags Project=Discovery,harvester=sierra_harvester \
     --keyname dgdvteam \
-    --scale 1 \
+    --single \
     --envvars KEYFROMABOVE="value",KEYFROMABOVE2="value",JAVA_TOOL_OPTIONS="-Dfile.config=UTF8" \
     --profile your-aws-profile-name
 ```
+
+If deploying to _nypl-sandbox_, you will need to deploy to a public subnet and add the `--vpc.publicip` to allocate a public IP address.
 
 #### Deploying
 
