@@ -48,7 +48,7 @@ eb create sierra-[item|bib]-harvester-[environment] \
     --tags Project=Discovery,harvester=sierra_harvester \
     --keyname dgdvteam \
     --scale 1 \
-    --envvars KEYFROMABOVE="value",KEYFROMABOVE2="value" \
+    --envvars KEYFROMABOVE="value",KEYFROMABOVE2="value",JAVA_TOOL_OPTIONS="-Dfile.config=UTF8" \
     --profile your-aws-profile-name
 ```
 
