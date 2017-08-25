@@ -37,6 +37,8 @@ Since this code base can harvest both bibs and items the environment names could
 
 #### Initial Creation
 
+If this is run on a linux environment, please make sure to have `LC_ALL="en_US.UTF-8"` in envvars. For any other operating system, please find out the required encoding that needs to be set and pass it accordingly.
+
 ```bash
 eb create sierra-[item|bib]-harvester-[environment] \
     --instance_type m4.large \
@@ -47,7 +49,7 @@ eb create sierra-[item|bib]-harvester-[environment] \
     --tags Project=Discovery,harvester=sierra_harvester \
     --keyname dgdvteam \
     --single \
-    --envvars KEYFROMABOVE="value",KEYFROMABOVE2="value",JAVA_TOOL_OPTIONS="-Dfile.config=UTF8" \
+    --envvars KEYFROMABOVE="value",KEYFROMABOVE2="value",LC_ALL="en_US.UTF-8" \
     --profile your-aws-profile-name
 ```
 
