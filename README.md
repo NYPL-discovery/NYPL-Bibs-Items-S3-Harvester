@@ -1,4 +1,6 @@
-# NYPL-Bibs-Items-S3-Harvester
+# NYPL-Bibs-Items-S3-Harvester (Deprecated)
+
+Note: This app is a newer, alternate implementation of [bulk-export-reader](https://github.com/NYPL-discovery/bulk-export-reader).
 
 An app to retrieve all the bibs and items that are in the bib and item json files stored in S3 and send them to kinesis stream in avro encoded format.
 
